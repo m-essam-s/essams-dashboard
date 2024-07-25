@@ -1,13 +1,13 @@
-'use client';
+'use client'; // Denotes that this module is client-side code and should be bundled by Vite.
 
 import {
   UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
+import Link from 'next/link'; // Import the Link component from Next.js
+import { usePathname } from 'next/navigation'; // Import the usePathname hook from Next.js
+import clsx from 'clsx'; // Import the clsx utility function
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
@@ -31,7 +31,6 @@ const links = [
 
 export default function NavLinks() {
   const pathname = usePathname();
-
   return (
     <>
       {links.map((link) => {
