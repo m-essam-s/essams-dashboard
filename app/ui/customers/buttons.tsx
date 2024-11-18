@@ -17,7 +17,7 @@ export function CreateCustomers() {
 export function UpdateCustomers({ id }: { id: string }) {
   return (
     <Link
-      href={`/dashboard/customers/`}
+      href={`/dashboard/customers/${id}/edit`}
       className="rounded-md border p-2 hover:bg-gray-100"
     >
       <PencilIcon className="w-5" />

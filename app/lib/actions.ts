@@ -24,6 +24,7 @@ const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
 const CreateCustomer = CustomerSchema.omit({ id: true });
+const UpdateCustomer = CustomerSchema.omit({ id: true });
 
 
 export async function createInvoice(formData: FormData) {
@@ -80,6 +81,23 @@ export async function createCustomer(formData: FormData) {
     INSERT INTO customers (name, email, image_url)
     VALUES (${name}, ${email}, ${imageUrl})
   `;
+
+    revalidatePath('/dashboard/customers');
+    redirect('/dashboard/customers');
+}
+
+export async function updateCustomer(id: string, formData: FormData) {
+    const { name, email, imageUrl } = UpdateCustomer.parse({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        imageUrl: formData.get('imageUrl'),
+    });
+
+    await sql`
+      UPDATE customers
+      SET name = ${name}, email = ${email}, image_url = ${imageUrl}
+      WHERE id = ${id}
+    `;
 
     revalidatePath('/dashboard/customers');
     redirect('/dashboard/customers');
