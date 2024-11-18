@@ -13,8 +13,17 @@ const FormSchema = z.object({
     date: z.string(),
 });
 
+const CustomerSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    email: z.string().email(),
+    imageUrl: z.string(),
+});
+
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+
+const CreateCustomer = CustomerSchema.omit({ id: true });
 
 
 export async function createInvoice(formData: FormData) {
@@ -57,4 +66,21 @@ export async function updateInvoice(id: string, formData: FormData) {
 export async function deleteInvoice(id: string) {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath('/dashboard/invoices');
+}
+
+export async function createCustomer(formData: FormData) {
+    const { name, email, imageUrl } = CreateCustomer.parse({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        imageUrl: formData.get('imageUrl'),
+    });
+    console.log(name, email, imageUrl);
+
+    await sql`
+    INSERT INTO customers (name, email, image_url)
+    VALUES (${name}, ${email}, ${imageUrl})
+  `;
+
+    revalidatePath('/dashboard/customers');
+    redirect('/dashboard/customers');
 }
