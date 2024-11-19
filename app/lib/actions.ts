@@ -36,10 +36,16 @@ export async function createInvoice(formData: FormData) {
 
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split('T')[0];
-    await sql`
-    INSERT INTO invoices (customer_id, amount, status, date)
-    VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-  `;
+    try {
+        await sql`
+        INSERT INTO invoices (customer_id, amount, status, date)
+        VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+        `;
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Create Invoice.',
+        };
+    }
 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
@@ -54,18 +60,32 @@ export async function updateInvoice(id: string, formData: FormData) {
 
     const amountInCents = amount * 100;
 
-    await sql`
+    try {
+        await sql`
       UPDATE invoices
       SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
       WHERE id = ${id}
     `;
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Update Invoice.',
+        };
+    }
 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
-    await sql`DELETE FROM invoices WHERE id = ${id}`;
+
+    try {
+        await sql`DELETE FROM invoices WHERE id = ${id}`;
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Delete Invoice.',
+        };
+    }
+
     revalidatePath('/dashboard/invoices');
 }
 
@@ -75,12 +95,17 @@ export async function createCustomer(formData: FormData) {
         email: formData.get('email'),
         imageUrl: formData.get('imageUrl'),
     });
-    console.log(name, email, imageUrl);
 
-    await sql`
+    try {
+        await sql`
     INSERT INTO customers (name, email, image_url)
     VALUES (${name}, ${email}, ${imageUrl})
   `;
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Create Customer.',
+        };
+    }
 
     revalidatePath('/dashboard/customers');
     redirect('/dashboard/customers');
@@ -93,23 +118,41 @@ export async function updateCustomer(id: string, formData: FormData) {
         imageUrl: formData.get('imageUrl'),
     });
 
-    await sql`
+    try {
+        await sql`
       UPDATE customers
       SET name = ${name}, email = ${email}, image_url = ${imageUrl}
       WHERE id = ${id}
     `;
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Update Customer.',
+        };
+    }
 
     revalidatePath('/dashboard/customers');
     redirect('/dashboard/customers');
 }
 
 export async function deleteCustomerInvoices(id: string) {
-    await sql`DELETE FROM invoices WHERE customer_id = ${id}`;
+    try {
+        await sql`DELETE FROM invoices WHERE customer_id = ${id}`;
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Delete Customer Invoices.',
+        };
+    }
     revalidatePath('/dashboard/customers');
 }
 
 export async function deleteCustomer(id: string) {
-    await sql`DELETE FROM customers WHERE id = ${id}`;
-    deleteCustomerInvoices(id);
+    try {
+        await sql`DELETE FROM customers WHERE id = ${id}`;
+        deleteCustomerInvoices(id);
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Delete Customer.',
+        };
+    }
     revalidatePath('/dashboard/customers');
 }
