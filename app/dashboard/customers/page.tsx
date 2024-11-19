@@ -6,6 +6,11 @@ import { CreateCustomers } from '@/app/ui/customers/buttons';
 import { Suspense } from 'react';
 import { CustomersTableSkeleton } from '@/app/ui/skeletons';
 import Pagination from '@/app/ui/customers/pagination';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "Customers",
+};
 
 export default async function Page(props: {
     searchParams?: Promise<{
